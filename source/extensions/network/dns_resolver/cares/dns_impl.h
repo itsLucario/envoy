@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <string>
+#include <regex>
 
 #include "envoy/common/platform.h"
 #include "envoy/event/dispatcher.h"
@@ -60,7 +61,7 @@ private:
     PendingResolution(DnsResolverImpl& parent, ResolveCb callback, Event::Dispatcher& dispatcher,
                       ares_channel channel, const std::string& dns_name)
         : parent_(parent), callback_(callback), dispatcher_(dispatcher), channel_(channel),
-          dns_name_(dns_name) {}
+          dns_name_(dns_name), invalidDNSChars_("[@_!#$%^&*()<>?/|}{~:]") {}
 
     void finishResolve();
 
@@ -87,6 +88,8 @@ private:
     // In the dual_resolution case __any__ ARES_SUCCESS reply will result in a
     // ResolutionStatus::Success callback.
     PendingResponse pending_response_{ResolutionStatus::Failure, {}};
+    
+    std::regex invalidDNSChars_;
   };
 
   class AddrInfoPendingResolution final : public PendingResolution {
