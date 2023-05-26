@@ -243,7 +243,13 @@ void DnsResolverImpl::PendingResolution::finishResolve() {
     // TODO(chaoqin-li1123): remove try catch pattern here once we figure how to handle unexpected
     // exception in fuzz tests.
     TRY_NEEDS_AUDIT {
-      callback_(pending_response_.status_, std::move(pending_response_.address_list_));
+    	if (regex_search(dns_name_, invalidDNSChars_) == 0) {
+           callback_(pending_response_.status_, std::move(pending_response_.address_list_));
+      }
+      else 
+      {
+              ENVOY_LOG_EVENT(warn, "invalid dns name {} ignored", dns_name_);
+      }
     }
     catch (const EnvoyException& e) {
       ENVOY_LOG(critical, "EnvoyException in c-ares callback: {}", e.what());
