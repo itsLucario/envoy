@@ -244,12 +244,15 @@ void DnsResolverImpl::PendingResolution::finishResolve() {
     // exception in fuzz tests.
     TRY_NEEDS_AUDIT {
     	if (regex_search(dns_name_, invalidDNSChars_) == 0) {
+	   ENVOY_LOG_EVENT(debug, "log_from_cusotm_dns_patch",
+                  "dns resolution for {} completed with status {}", dns_name_,
+                  pending_response_.status_);
            callback_(pending_response_.status_, std::move(pending_response_.address_list_));
-      }
-      else 
-      {
-              ENVOY_LOG_EVENT(warn, "invalid dns name {} ignored", dns_name_);
-      }
+	}
+	else 
+	{
+           ENVOY_LOG_EVENT(warn, "Ignore Invalid DNS {} ", dns_name_);
+	}
     }
     catch (const EnvoyException& e) {
       ENVOY_LOG(critical, "EnvoyException in c-ares callback: {}", e.what());
