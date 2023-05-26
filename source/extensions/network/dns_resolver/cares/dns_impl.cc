@@ -232,7 +232,7 @@ void DnsResolverImpl::AddrInfoPendingResolution::onAresGetAddrInfoCallback(
 
 void DnsResolverImpl::PendingResolution::finishResolve() {
   ENVOY_LOG_EVENT(debug, "cares_dns_resolution_complete",
-                  "dns resolution for {} completed with status {}", dns_name_,
+                  "dns resolution for {} completed with status {} log_from_patch", dns_name_,
                   pending_response_.status_);
 
   if (!cancelled_) {
